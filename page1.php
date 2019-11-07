@@ -2,7 +2,7 @@
 /* Kommentti */
   session_start();
   
-  $_SESSION['sess_var'] = "Hello world, terve taas maailma!";
+  $_SESSION['sess_var'] = "Hello world, maailma!";
 
   echo 'The content of $_SESSION[\'sess_var\'] is '
         .$_SESSION['sess_var'].'<br />';
