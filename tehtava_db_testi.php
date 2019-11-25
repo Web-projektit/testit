@@ -1,4 +1,5 @@
 <?php
+/* Testaus */
 if (!session_id()) session_start();
 ?>
 <!DOCTYPE html>
@@ -145,8 +146,19 @@ function nayta($kentta){
 echo isset($_POST[$kentta]) ? $_POST[$kentta] : ""; 	
 return;
 }
-
-$db = new mysqli('localhost','root','','sakila');
+	
+if (true) {	
+  $password = "6#vWHD_$";
+  $user = "azure";
+  $server = "localhost:49492";
+  }
+else {
+  $password = "";
+  $user = "root";
+  $server = "localhost";	
+  }
+	
+$db = new mysqli($server,$user,$password,'sakila');
 if (mysqli_connect_errno()){
    echo "Virhe tietokantayhteydessä.<br>";
   }
