@@ -8,7 +8,16 @@ if (!session_id()) session_start();
 <title>PHP-tehtävät, sessio</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--
 <link rel="stylesheet" href="bootstrap.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>-->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
 <link rel="stylesheet" href="bootstrap_media_queries.css">
 </head>
 <style>
@@ -21,8 +30,11 @@ body,select,textarea {font-family:Arial;}
   vertical-align:top;*/
   color:blue;
   }  
-input,textarea,select {margin-bottom:4px;font-size:16px;}  
-.radio {display:inline;padding-right:4px;padding-left:4px;}
+.list-group-item label {white-space:nowrap;}
+.list-group-item {border:0;}
+.checkbox {margin-left:25px;}
+/*input,textarea,select {font-size:16px;}*/  
+/*.radio {display:inline;padding-right:4px;padding-left:4px;}*/
 .yksikko {padding-left:4px;}
 /*.teksti {display:inline-block;width:200px;}*/
 .lukema {display:inline-block;width:50px;}
@@ -36,6 +48,29 @@ input,textarea,select {margin-bottom:4px;font-size:16px;}
 .tyhja {position:absolute;display:inline-block;width:20px;visibility:hidden;}
 #footer p{text-align:center;font-size:1.2rem;font-weight:bold;}
 </style>
+
+<script>
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.getElementsByClassName('needs-validation');
+    // Loop over them and prevent submission
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
+</script>
+
+
 <body>
 
 <?php
@@ -94,11 +129,10 @@ foreach ($strArr AS $feature){
   //echo "$feature,checked:$checked,feature_set:$feature_set,box_set:$box_set<br>";
   //echo "<label>$f</label><span class=\"tyhja\"></span><input type=\"checkbox\" name=\"special_features[]\" 
   //      value=$feature $checked><br>";
-  echo "<div class=\"checkbox\"><label><input type=\"checkbox\" name=\"special_features[]\" "
+  echo "<div class=\"checkbox\"><label class=\"form-check-label\"><input class=\"form-check-input\" type=\"checkbox\" name=\"special_features[]\" "
        . "value=$feature $checked>$f</label></div>";
   }	
 }
-
 
 function rating(){
 global $db;	
@@ -112,7 +146,7 @@ $strArr = explode(",",$matches[1]);
 //echo "str:$str<br>";
 //var_dump($result);
 //var_export($_POST['special_features']);
-echo "<ul class=\"list-inline ul-inline\">";
+echo "<ul class=\"list-group list-group-horizontal\">";
 foreach ($strArr AS $rating){
   $r = trim($rating,"'");
   $rating_set = (isset($_POST['rating']) and $r == $_POST['rating']);  
@@ -120,8 +154,8 @@ foreach ($strArr AS $rating){
   //echo "$feature,checked:$checked,feature_set:$feature_set,box_set:$box_set<br>";
   //echo "<li class=\"list-group-item\"><label class=\"radio\">$r</label><input type=\"radio\" name=\"rating\" 
   //      value=$rating $checked></li>";
-   echo "<li class=\"list-group-item\"><input type=\"radio\" name=\"rating\" 
-        value=$rating $checked><label class=\"radio\">$r</label></li>";
+   echo "<li class=\"list-group-item\"><input class=\"form-check-input\" type=\"radio\" name=\"rating\" 
+        value=$rating $checked><label class=\"form-check-label\">$r</label></li>";
 
   }	
 echo "</ul>";  
@@ -172,20 +206,8 @@ else {
 //exit;
 
 $db = new mysqli($server,$user,$password,'sakila');
-
-
 if (mysqli_connect_errno()){
    echo "Virhe tietokantayhteydessä.<br>";
-  }
-
-$error = true;  
-try {
-  if ($error)  
-    throw new Exception("Tässä on aluksi esimerkki virheestä.", 42);
-  }
-catch (Exception $e) {
-  echo "Exception ". $e->getCode(). ": ". $e->getMessage()."".
-  " tiedostossa ". $e->getFile(). " rivillä ". $e->getLine(). "<br />";
   }
   
   /*
@@ -205,7 +227,45 @@ while ($row = $result->fetch_assoc()){
 */
 
 ?>
+  
+ 
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+  <a class="navbar-brand" href="#"><img class="img-responsive" src="company_logo.png" width="120" height="39" alt="company_logo"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>    
+    
 <div class="container">
+<?php
+/*$error = true;  
+try {
+  if ($error)  
+    throw new Exception("Tässä on aluksi esimerkki virheestä.", 42);
+  }
+catch (Exception $e) {
+  echo "Exception ". $e->getCode(). ": ". $e->getMessage()."".
+  " tiedostossa ". $e->getFile(). " rivillä ". $e->getLine(). "<br />";
+  }*/
+?>
 <!-- Kopioitu malli -->
 <!--  <form class="form-horizontal">
   <div class="form-group">
@@ -235,62 +295,62 @@ while ($row = $result->fetch_assoc()){
     
 </form>-->
     
-<form class="form-horizontal" id="action_form" action="tehtava_lomakekasittelija.php" method="post">
+<form class="" id="action_form" action="tehtava_lomakekasittelija.php" method="post">
 <fieldset>
 <legend>Uusi elokuva</legend>
-<div class="form-group">
+<div class="form-group row">
 <label class="control-label col-sm-2 relative">Nimi:</label><span class="<?php virhe('title');?>">*</span>
 <div class="col-sm-10">
-<input class="form-control teksti" type="text" name="title" value = "<?php nayta('title');?>"><br>
+<input class="form-control teksti" type="text" name="title" value = "<?php nayta('title');?>">
 </div></div>
-<div class="form-group">
+<div class="form-group row">
 <label class="control-label col-sm-2">Kuvaus:</label><span class="<?php virhe('description');?>">*</span>
 <div class="col-sm-10">
-<textarea class="form-control teksti" rows="4" cols="40" name="description"><?php nayta('description');?></textarea><br>
+<textarea class="form-control teksti" rows="4" cols="40" name="description"><?php nayta('description');?></textarea>
 </div></div>
-<div class="form-group">
+<div class="form-group row">
 <label class="control-label col-sm-2">Julkaisuvuosi:</label><span class="<?php virhe('release_year');?>">*</span>
 <div class="col-sm-10">
-<input class="form-control lukema" type="text" name="release_year" value="<?php nayta('release_year');?>"><br>
+<input class="form-control lukema" type="text" name="release_year" value="<?php nayta('release_year');?>">
 </div></div>
-<div class="form-group">
+<div class="form-group row">
 <label class="control-label col-sm-2">Kieli:</label><span class="<?php virhe('language_id');?>">*</span>
 <div class="col-sm-5">
-<?php echo kielet();?><br>
+<?php echo kielet();?>
 </div></div>
-<div class="form-group">
+<div class="form-group row">
 <label class="control-label col-sm-2">Vuokra-aika:</label><span class="<?php virhe('rental_duration');?>">*</span>
 <div class="col-sm-10">
     <input class="form-control lukema" type="text" name="rental_duration" value="<?php nayta('rental_duration');?>"><span class="yksikko">pv</span><br>
 </div></div>
-<div class="form-group">
+<div class="form-group row">
 <label class="control-label col-sm-2">Vuokrahinta:</label><span class="<?php virhe('rental_rate');?>">*</span>
 <div class="col-sm-10">
 <input class="form-control lukema" type="text" name="rental_rate" value="<?php nayta('rental_rate');?>"><span class="yksikko">€</span><br>
 </div></div>
-<div class="form-group">
+<div class="form-group row">
 <label class="control-label col-sm-2">Pituus:</label><span class="<?php virhe('length');?>">*</span>
 <div class="col-sm-10">
 <input class="form-control lukema" type="text" name="length"><span class="yksikko">min</span><br>
 </div></div>
-<div class="form-group">
+<div class="form-group row">
 <label class="control-label col-sm-2">Korvaushinta:</label><span class="<?php virhe('replacement_cost');?>">*</span>
 <div class="col-sm-10">
 <input class="form-control lukema" type="text" name="replacement_cost"><span class="yksikko">€</span><br>
 </div></div>
-<div class="form-group">
+<div class="form-group row">
 <label class="control-label col-sm-2">Ikäraja:</label><span class="<?php virhe('rating');?>">*</span>
 <div class="col-sm-10">    
 <?php rating();?>
 </div></div>
-<div class="form-group">
-<label class="control-label col-sm-2" style="color:#333333;padding-bottom:4px;">Special features:</label>
+<div class="form-group row">
+<label class="control-label col-sm-2" style="color:#333333;">Special features:</label>
 <div class="col-sm-10">  
 <?php specialfeatures();?>
 </div></div>
-<div class="form-group">
+<div class="form-group row">
 <div class="col-sm-offset-2 col-sm-10">
-<input class="btn btn-default" type="submit" value="Tallenna"><br>
+<input class="btn btn-primary" type="submit" value="Tallenna"><br>
 </div></div>
 </fieldset>
 </form>
