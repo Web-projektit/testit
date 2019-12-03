@@ -1,5 +1,5 @@
 <?php
-/* Kommentti 3.12.2019 klo 13:43*/
+/* Kommentti NetBeans 3.12.2019 klo 13:45*/
   session_start();
   
   $_SESSION['sess_var'] = "Hello world, terve maailma!";
