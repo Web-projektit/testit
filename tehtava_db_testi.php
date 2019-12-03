@@ -12,11 +12,16 @@ if (!session_id()) session_start();
 <!--
 <link rel="stylesheet" href="bootstrap.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>-->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>-->
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 
 <link rel="stylesheet" href="bootstrap_media_queries.css">
 </head>
@@ -37,7 +42,7 @@ body,select,textarea {font-family:Arial;}
 /*.radio {display:inline;padding-right:4px;padding-left:4px;}*/
 .yksikko {padding-left:4px;}
 /*.teksti {display:inline-block;width:200px;}*/
-.lukema {display:inline-block;width:50px;}
+.lukema {display:inline-block;width:100px;}
 .ul-inline {flex-direction:row;}
 .virhe_group {list-style-type:none;}
 .virhe_p {color:red;list-style-type:none;}
@@ -99,7 +104,7 @@ function kielet(){
 global $db;	
 $query = "SELECT language_id,name FROM language ORDER BY name";
 $result = $db->query($query);
-echo "<select class=\"form-control\" name=\"language_id\">";
+echo "<select required class=\"form-control\" name=\"language_id\">";
 echo "<option value=\"\"></option><br>";
 while (list($id,$name) = $result->fetch_row()){
   if (isset($_POST['language_id']) and $_POST['language_id'] == $id)
@@ -135,7 +140,9 @@ foreach ($strArr AS $feature){
 }
 
 function rating(){
-global $db;	
+global $db;
+$errormsg = "<div class=\"invalid-feedback\">Valitse ikäraja.</div>";
+
 $query = "SHOW COLUMNS FROM film LIKE 'rating'";
 $result = $db->query($query);
 $row = $result->fetch_assoc();
@@ -154,11 +161,14 @@ foreach ($strArr AS $rating){
   //echo "$feature,checked:$checked,feature_set:$feature_set,box_set:$box_set<br>";
   //echo "<li class=\"list-group-item\"><label class=\"radio\">$r</label><input type=\"radio\" name=\"rating\" 
   //      value=$rating $checked></li>";
-   echo "<li class=\"list-group-item\"><input class=\"form-check-input\" type=\"radio\" name=\"rating\" 
-        value=$rating $checked><label class=\"form-check-label\">$r</label></li>";
-
+  echo "<li class=\"list-group-item\"><input class=\"form-check-input\" type=\"radio\" name=\"rating\" 
+        value=$rating $checked required><label class=\"form-check-label\">$r</label></li>";
   }	
-echo "</ul>";  
+echo "</ul>"; 
+echo "<input style=\"display:none;\" type=\"radio\" name=\"rating\" 
+        value='' required>$errormsg";   
+
+
 }
 
 
@@ -295,48 +305,57 @@ catch (Exception $e) {
     
 </form>-->
     
-<form class="" id="action_form" action="tehtava_lomakekasittelija.php" method="post">
+<form class="needs-validation" novalidate id="action_form" action="tehtava_lomakekasittelija.php" method="post">
 <fieldset>
 <legend>Uusi elokuva</legend>
 <div class="form-group row">
 <label class="control-label col-sm-2 relative">Nimi:</label><span class="<?php virhe('title');?>">*</span>
 <div class="col-sm-10">
-<input class="form-control teksti" type="text" name="title" value = "<?php nayta('title');?>">
-</div></div>
+<input required class="form-control teksti" type="text" name="title" value = "<?php nayta('title');?>">
+<div class="invalid-feedback">Kirjoita nimi.</div></div>
+</div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Kuvaus:</label><span class="<?php virhe('description');?>">*</span>
 <div class="col-sm-10">
-<textarea class="form-control teksti" rows="4" cols="40" name="description"><?php nayta('description');?></textarea>
+<textarea required class="form-control teksti" rows="4" cols="40" name="description"><?php nayta('description');?></textarea>
+<!--<div class="valid-feedback">Ok</div>-->
+<div class="invalid-feedback">Kirjoita kuvaus.</div>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Julkaisuvuosi:</label><span class="<?php virhe('release_year');?>">*</span>
 <div class="col-sm-10">
-<input class="form-control lukema" type="text" name="release_year" value="<?php nayta('release_year');?>">
+<input required class="form-control lukema" type="text" name="release_year" value="<?php nayta('release_year');?>">
+<div class="invalid-feedback">Lisää julkaisuvuosi.</div>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Kieli:</label><span class="<?php virhe('language_id');?>">*</span>
 <div class="col-sm-5">
 <?php echo kielet();?>
+<div class="invalid-feedback">Valitse kieli.</div>    
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Vuokra-aika:</label><span class="<?php virhe('rental_duration');?>">*</span>
 <div class="col-sm-10">
-    <input class="form-control lukema" type="text" name="rental_duration" value="<?php nayta('rental_duration');?>"><span class="yksikko">pv</span><br>
+<input required class="form-control lukema" type="text" name="rental_duration" value="<?php nayta('rental_duration');?>"><span class="yksikko">pv</span><br>
+<div class="invalid-feedback">Lisää vuokra-aika.</div>    
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Vuokrahinta:</label><span class="<?php virhe('rental_rate');?>">*</span>
 <div class="col-sm-10">
-<input class="form-control lukema" type="text" name="rental_rate" value="<?php nayta('rental_rate');?>"><span class="yksikko">€</span><br>
+<input required class="form-control lukema" type="text" name="rental_rate" value="<?php nayta('rental_rate');?>"><span class="yksikko">€</span><br>
+<div class="invalid-feedback">Lisää vuokrahinta.</div>   
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Pituus:</label><span class="<?php virhe('length');?>">*</span>
 <div class="col-sm-10">
-<input class="form-control lukema" type="text" name="length"><span class="yksikko">min</span><br>
+<input required class="form-control lukema" type="text" name="length"><span class="yksikko">min</span><br>
+<div class="invalid-feedback">Lisää pituus.</div>  
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Korvaushinta:</label><span class="<?php virhe('replacement_cost');?>">*</span>
 <div class="col-sm-10">
-<input class="form-control lukema" type="text" name="replacement_cost"><span class="yksikko">€</span><br>
+<input required class="form-control lukema" type="text" name="replacement_cost"><span class="yksikko">€</span><br>
+<div class="invalid-feedback">Lisää korvaushinta.</div>  
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Ikäraja:</label><span class="<?php virhe('rating');?>">*</span>
