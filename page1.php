@@ -1,5 +1,5 @@
 <?php
-/* Kommentti */
+/* Kommentti 3.12.2019 klo 13:41*/
   session_start();
   
   $_SESSION['sess_var'] = "Hello world, terve maailma!";
