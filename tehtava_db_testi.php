@@ -1,5 +1,5 @@
 <?php
-/* Testaus */
+/* Testaus 5.12.2019*/
 if (!session_id()) session_start();
 ?>
 <!DOCTYPE html>
@@ -12,16 +12,29 @@ if (!session_id()) session_start();
 <!--
 <link rel="stylesheet" href="bootstrap.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>-->
+<!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>-->
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+<script>
+var str = '0,01';
+var desimaalit = 3;
+//var pattern = /^\d+(,\d{1,2}){0,1}$/;    
+//var myArray = str.search(pattern);
+//var pattern = "^\\d+(,\\d{1,"+desimaalit+"}){0,1}$"; 
+var pattern = "^\\d+(,\\d{1,"+desimaalit+"})?$";   
+var pattern = "^\\d+(,\\d{1,2})?$";    
+re = new RegExp(pattern,"g");
+var testi = re.test(str);
+console.log('regexp:',testi);
+</script>
 
 <link rel="stylesheet" href="bootstrap_media_queries.css">
 </head>
@@ -37,6 +50,7 @@ body,select,textarea {font-family:Arial;}
   }  
 .list-group-item label {white-space:nowrap;}
 .list-group-item {border:0;}
+/*.control-label {min-width:150px;}*/
 .checkbox {margin-left:25px;}
 /*input,textarea,select {font-size:16px;}*/  
 /*.radio {display:inline;padding-right:4px;padding-left:4px;}*/
@@ -323,7 +337,7 @@ catch (Exception $e) {
 <div class="form-group row">
 <label class="control-label col-sm-2">Julkaisuvuosi:</label><span class="<?php virhe('release_year');?>">*</span>
 <div class="col-sm-10">
-<input required class="form-control lukema" min="1900" max="2100" type="number" name="release_year" value="<?php nayta('release_year');?>">
+<input required class="form-control lukema" min="1900" max="2100" type="number" name="release_year" placeholder="2019" value="<?php nayta('release_year');?>">
 <div class="invalid-feedback">Lisää julkaisuvuosi.</div>
 </div></div>
 <div class="form-group row">
@@ -335,13 +349,13 @@ catch (Exception $e) {
 <div class="form-group row">
 <label class="control-label col-sm-2">Vuokra-aika:</label><span class="<?php virhe('rental_duration');?>">*</span>
 <div class="col-sm-10">
-<input required class="form-control lukema" type="number" min="1" max="365" name="rental_duration" value="<?php nayta('rental_duration');?>"><span class="yksikko">pv</span><br>
+<input required class="form-control lukema" type="number" min="1" max="365" name="rental_duration" placeholder="1" value="<?php nayta('rental_duration');?>"><span class="yksikko">pv</span><br>
 <div class="invalid-feedback">Lisää vuokra-aika.</div>    
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Vuokrahinta:</label><span class="<?php virhe('rental_rate');?>">*</span>
 <div class="col-sm-10">
-<input required class="form-control lukema" type="number" name="rental_rate" value="<?php nayta('rental_rate');?>"><span class="yksikko">€</span><br>
+<input required pattern="^\d+(,\d{1,2}){0,1}$" class="form-control lukema" type="text" name="rental_rate" value="<?php nayta('rental_rate');?>"><span class="yksikko">€</span><br>
 <div class="invalid-feedback">Lisää vuokrahinta.</div>   
 </div></div>
 <div class="form-group row">
@@ -353,7 +367,7 @@ catch (Exception $e) {
 <div class="form-group row">
 <label class="control-label col-sm-2">Korvaushinta:</label><span class="<?php virhe('replacement_cost');?>">*</span>
 <div class="col-sm-10">
-<input required class="form-control lukema" type="number" name="replacement_cost"><span class="yksikko">€</span><br>
+<input required pattern="^\d+(,\d{1,2}){0,1}$" class="form-control lukema" type="text" name="replacement_cost"><span class="yksikko">€</span><br>
 <div class="invalid-feedback">Lisää korvaushinta.</div>  
 </div></div>
 <div class="form-group row">
