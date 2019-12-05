@@ -12,7 +12,7 @@ $numeeriset = array('release_year','rental_duration','rental_rate','length','rep
 foreach ($kentat AS $kentta) {
   if (empty($_POST[$kentta]) and $kentta <> 'special_features') 
 	$error_required[$kentta] = true;
-  if (in_array($kentta,$numeeriset) and !is_numeric($_POST[$kentta]))
+  if (in_array($kentta,$numeeriset) and !is_numeric(str_replace(",",".",$_POST[$kentta])))
 	$error_numeric[$kentta] = true;
   }				
 
