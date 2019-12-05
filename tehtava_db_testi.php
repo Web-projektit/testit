@@ -57,7 +57,7 @@ body,select,textarea {font-family:Arial;}
 <script>
 // Example starter JavaScript for disabling form submissions if there are invalid fields
 (function() {
-  'use strict';
+  'use strict'; 
   window.addEventListener('load', function() {
     // Fetch all the forms we want to apply custom Bootstrap validation styles to
     var forms = document.getElementsByClassName('needs-validation');
@@ -141,7 +141,7 @@ foreach ($strArr AS $feature){
 
 function rating(){
 global $db;
-$errormsg = "<div class=\"invalid-feedback\">Valitse ikäraja.</div>";
+$errormsg = "<div class=\"invalid-feedback\" style=\"margin-top:-0.25rem;\">Valitse ikäraja.</div>";
 
 $query = "SHOW COLUMNS FROM film LIKE 'rating'";
 $result = $db->query($query);
@@ -257,7 +257,7 @@ while ($row = $result->fetch_assoc()){
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
       </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0">
+    <form id="form_search" class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="search" placeholder="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
@@ -304,7 +304,6 @@ catch (Exception $e) {
     </div>   
     
 </form>-->
-    
 <form class="needs-validation" novalidate id="action_form" action="tehtava_lomakekasittelija.php" method="post">
 <fieldset>
 <legend>Uusi elokuva</legend>
@@ -324,7 +323,7 @@ catch (Exception $e) {
 <div class="form-group row">
 <label class="control-label col-sm-2">Julkaisuvuosi:</label><span class="<?php virhe('release_year');?>">*</span>
 <div class="col-sm-10">
-<input required class="form-control lukema" type="text" name="release_year" value="<?php nayta('release_year');?>">
+<input required class="form-control lukema" min="1900" max="2100" type="number" name="release_year" value="<?php nayta('release_year');?>">
 <div class="invalid-feedback">Lisää julkaisuvuosi.</div>
 </div></div>
 <div class="form-group row">
@@ -336,25 +335,25 @@ catch (Exception $e) {
 <div class="form-group row">
 <label class="control-label col-sm-2">Vuokra-aika:</label><span class="<?php virhe('rental_duration');?>">*</span>
 <div class="col-sm-10">
-<input required class="form-control lukema" type="text" name="rental_duration" value="<?php nayta('rental_duration');?>"><span class="yksikko">pv</span><br>
+<input required class="form-control lukema" type="number" min="1" max="365" name="rental_duration" value="<?php nayta('rental_duration');?>"><span class="yksikko">pv</span><br>
 <div class="invalid-feedback">Lisää vuokra-aika.</div>    
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Vuokrahinta:</label><span class="<?php virhe('rental_rate');?>">*</span>
 <div class="col-sm-10">
-<input required class="form-control lukema" type="text" name="rental_rate" value="<?php nayta('rental_rate');?>"><span class="yksikko">€</span><br>
+<input required class="form-control lukema" type="number" name="rental_rate" value="<?php nayta('rental_rate');?>"><span class="yksikko">€</span><br>
 <div class="invalid-feedback">Lisää vuokrahinta.</div>   
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Pituus:</label><span class="<?php virhe('length');?>">*</span>
 <div class="col-sm-10">
-<input required class="form-control lukema" type="text" name="length"><span class="yksikko">min</span><br>
+<input required class="form-control lukema" type="number" name="length"><span class="yksikko">min</span><br>
 <div class="invalid-feedback">Lisää pituus.</div>  
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Korvaushinta:</label><span class="<?php virhe('replacement_cost');?>">*</span>
 <div class="col-sm-10">
-<input required class="form-control lukema" type="text" name="replacement_cost"><span class="yksikko">€</span><br>
+<input required class="form-control lukema" type="number" name="replacement_cost"><span class="yksikko">€</span><br>
 <div class="invalid-feedback">Lisää korvaushinta.</div>  
 </div></div>
 <div class="form-group row">
@@ -391,4 +390,3 @@ if (isset($_POST['error_numeric'])) echo "<li class=\"virhe_p\"><span class=\"vi
 </div>
 </body>
 </html>
-
