@@ -9,15 +9,18 @@ if (!session_id()) session_start();
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!--
+<!-- Bootstrap 3 
 <link rel="stylesheet" href="bootstrap.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>-->
-<!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<!-- Bootstrap 4.3.1
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>-->
 
+<!-- Bootstrap 4.4.1 -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -93,7 +96,97 @@ body,select,textarea {font-family:Arial;}
 <body>
 
 <?php
+function debug_error_handler($errno,$errstr,$errfile,$errline){
+    if (!(error_reporting() & $errno)) {
+        // This error code is not included in error_reporting, so let it fall
+        // through to the standard PHP error handler
+        return false;
+        }
+
+    switch ($errno) {
+    case E_USER_ERROR:
+        echo "<b>My ERROR</b> [$errno] $errstr<br />\n";
+        echo "  Fatal error on line $errline in file $errfile";
+        echo ", PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\n";
+        echo "Aborting...<br />\n";
+        exit(1);
+        break;
+
+    case E_USER_WARNING:
+        echo "<b>My WARNING</b> [$errno] $errstr<br />\n";
+        break;
+
+    case E_USER_NOTICE:
+        echo "<b>My NOTICE</b> [$errno] $errstr<br />\n";
+        break;
+
+    default:
+        echo "Unknown error type: [$errno] $errstr<br />\n";
+        break;
+    }
+    /* Don't execute PHP internal error handler */
+    return true;
+}
+
+// function to test the error handling
+function scale_by_log($vect, $scale){
+    if (!is_numeric($scale) || $scale <= 0) {
+        trigger_error("log(x) for x <= 0 is undefined, you used: scale = $scale", E_USER_ERROR);
+        }
+    if (!is_array($vect)) {
+        trigger_error("Incorrect input vector, array of values expected", E_USER_WARNING);
+        return null;
+        }
+    $temp = array();
+    foreach($vect as $pos => $value) {
+        if (!is_numeric($value)) {
+            trigger_error("Value at position $pos is not a number, using 0 (zero)", E_USER_NOTICE);
+            $value = 0;
+            }
+        $temp[$pos] = log($scale) * $value;
+        }
+    return $temp;
+}
+
+function debug_test_error_handler(){
+// set to the user defined error handler
+// trigger some errors, first define a mixed array with a non-numeric item
+echo "vector a:<br>";
+$a = array(2, 3, "foo", 5.5, 43.3, 21.11);
+print_r($a);
+// now generate second array
+echo "<br>----\nvector b - a notice (b = log(PI) * a):<br>";
+/* Value at position $pos is not a number, using 0 (zero) */
+$b = scale_by_log($a, M_PI);
+print_r($b);
+// this is trouble, we pass a string instead of an array
+echo "<br>----\nvector c - a warning<br>";
+/* Incorrect input vector, array of values expected */
+$c = scale_by_log("not array", 2.3);
+var_dump($c); // NULL
+// this is a critical error, log of zero or negative number is undefined
+echo "<br>----\nvector d - fatal error<br>";
+/* log(x) for x <= 0 is undefined, you used: scale = $scale" */
+$d = scale_by_log($a, -2.5);
+var_dump($d); // Never reached
+echo "<br>";
+}
+
+function debuggeri_filter($n){
+  $pop = array_shift($n);
+  $args = implode(",",$n['args']);
+  $m = "   rivi ".$n['line'].", ".$n['function']."($args)";  
+  return $m; 
+  }
+
 //var_export($_POST);
+function debuggeri_backtrace($errorMsg){
+  $backtrace = debug_backtrace();   
+  $pop = array_shift($backtrace);
+  $backtrace = array_map('debuggeri_filter', $backtrace);
+  $msg = date("Y-m-d H:i:s")." Check ".$errorMsg;
+  file_put_contents("debug_log.txt", $msg."\n".implode("\n",$backtrace)."\n", FILE_APPEND);
+  }
 
 function tulostasessio(){
 echo "Session-parametrit:<br>";	
@@ -127,6 +220,7 @@ while (list($id,$name) = $result->fetch_row()){
   echo "<option value=\"$id\"$selected>$name</option><br>";
   }
 echo "</select>";	
+debuggeri_backtrace(__FUNCTION__.",$query");
 }
 
 function specialfeatures(){
@@ -151,6 +245,7 @@ foreach ($strArr AS $feature){
   echo "<div class=\"checkbox\"><label class=\"form-check-label\"><input class=\"form-check-input\" type=\"checkbox\" name=\"special_features[]\" "
        . "value=$feature $checked>$f</label></div>";
   }	
+debuggeri_backtrace(__FUNCTION__.",$query");
 }
 
 function rating(){
@@ -181,8 +276,7 @@ foreach ($strArr AS $rating){
 echo "</ul>"; 
 echo "<input style=\"display:none;\" type=\"radio\" name=\"rating\" 
         value='' required>$errormsg";   
-
-
+debuggeri_backtrace(__FUNCTION__.",$query");
 }
 
 
@@ -210,11 +304,14 @@ return;
 }
 
 function nayta($kentta){
-echo isset($_POST[$kentta]) ? $_POST[$kentta] : ""; 	
+echo isset($_POST[$kentta]) ? $_POST[$kentta] : ""; 
 return;
 }
 	
 //var_export($_SERVER);
+$old_error_handler = set_error_handler("debug_error_handler");
+debug_test_error_handler();
+
 $remote = in_array($_SERVER['REMOTE_ADDR'],array('127.0.0.1','REMOTE_ADDR' => '::1'));
 if (!$remote) {	
   $password = "6#vWHD_$";
