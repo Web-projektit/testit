@@ -121,7 +121,8 @@ function debug_error_handler($errno,$errstr,$errfile,$errline){
         break;
 
     default:
-        echo "Unknown error type: [$errno] $errstr<br />\n";
+        echo "System generated error: [$errno] $errstr<br />\n";
+        return false;
         break;
     }
     /* Don't execute PHP internal error handler */
@@ -181,13 +182,33 @@ function debuggeri_filter($n){
 
 //var_export($_POST);
 function debuggeri_backtrace($errorMsg){
+  if (!DEBUG) return;  
   $backtrace = debug_backtrace();   
-  $pop = array_shift($backtrace);
+  //file_put_contents("debug_log.txt", $msg."\n".var_export($backtrace,true)."\n", FILE_APPEND);
+  $dummy = array_shift($backtrace);
   $backtrace = array_map('debuggeri_filter', $backtrace);
   $msg = date("Y-m-d H:i:s")." Check ".$errorMsg;
   file_put_contents("debug_log.txt", $msg."\n".implode("\n",$backtrace)."\n", FILE_APPEND);
   }
 
+function debuggeri_shutdown($parametrit = ""){
+  $error = error_get_last();
+  $type = ($error) ? $error['type'] : "";
+  //$timezone = date_default_timezone_get();
+  if ($error['type'] === E_ERROR){
+    $msg = date("Y-m-d H:i:s")." ohjelman suoritus päättyi.";
+    $msg.= " Tappava virhe $type rivillä ".$error['line'].".";     
+    $msg = utf8_decode($msg);
+    $path = $_SERVER['DOCUMENT_ROOT']."/debug_shutdown.txt";
+    file_put_contents($path,$msg."\n", FILE_APPEND);
+    }    
+  /*else { 
+    $msg = utf8_decode($msg);
+    file_put_contents($path,$msg."\n", FILE_APPEND);
+    }*/
+    //else debuggeri_backtrace("Muu virhe rivillä ".$error['line']);  
+  }  
+  
 function tulostasessio(){
 echo "Session-parametrit:<br>";	
 /*echo "post:<br>";
@@ -307,10 +328,17 @@ function nayta($kentta){
 echo isset($_POST[$kentta]) ? $_POST[$kentta] : ""; 
 return;
 }
-	
+
+/* OHJELMA ALKAA TÄSTÄ */
 //var_export($_SERVER);
+error_reporting(0);
+define('DEBUG', true);
+date_default_timezone_set("Europe/Helsinki");
 $old_error_handler = set_error_handler("debug_error_handler");
-debug_test_error_handler();
+register_shutdown_function('debuggeri_shutdown');
+//trigger_error("Testiä",E_USER_ERROR);
+//debug_test_error_handler();
+//$x = dummyfunction();
 
 $remote = in_array($_SERVER['REMOTE_ADDR'],array('127.0.0.1','REMOTE_ADDR' => '::1'));
 if (!$remote) {	
