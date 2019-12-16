@@ -2,7 +2,7 @@
 //echo "lomakekasittelija.php<br>";
 //var_export($_POST);
 //exit;
-  
+include('debuggeri.php');  
 $error_required = array();
 $error_numeric = array();
 $kentat = array('title','description','release_year','language_id',
@@ -79,7 +79,11 @@ $arvot = implode("','",$mysql_arvot);
 $db->set_charset('utf8');
 $query = "INSERT INTO film ($kentat) VALUES ('$arvot')";
 //echo $query."<br>";
-$db->query($query);
-echo "<p>Elokuvan tiedot on tallennettu.</p><br>";
+$result = $db->query($query);
+if (!$result) {
+  debuggeri_backtrace("$query,\nvirhe:".$db->error);
+  echo "<p>Elokuvan tallennus ei onnistunut.</p><br>";
+  }
+else echo "<p>Elokuvan tiedot on tallennettu.</p><br>";
 echo "<form action=\"tehtava_db_testi.php\"><input type=\"submit\" value=\"OK\"></form>"  
 ?>
