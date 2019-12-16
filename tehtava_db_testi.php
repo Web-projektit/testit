@@ -96,38 +96,6 @@ body,select,textarea {font-family:Arial;}
 <body>
 
 <?php
-function debug_error_handler($errno,$errstr,$errfile,$errline){
-    if (!(error_reporting() & $errno)) {
-        // This error code is not included in error_reporting, so let it fall
-        // through to the standard PHP error handler
-        return false;
-        }
-
-    switch ($errno) {
-    case E_USER_ERROR:
-        echo "<b>My ERROR</b> [$errno] $errstr<br />\n";
-        echo "  Fatal error on line $errline in file $errfile";
-        echo ", PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\n";
-        echo "Aborting...<br />\n";
-        exit(1);
-        break;
-
-    case E_USER_WARNING:
-        echo "<b>My WARNING</b> [$errno] $errstr<br />\n";
-        break;
-
-    case E_USER_NOTICE:
-        echo "<b>My NOTICE</b> [$errno] $errstr<br />\n";
-        break;
-
-    default:
-        echo "System generated error: [$errno] $errstr<br />\n";
-        return false;
-        break;
-    }
-    /* Don't execute PHP internal error handler */
-    return true;
-}
 
 // function to test the error handling
 function scale_by_log($vect, $scale){
@@ -172,42 +140,6 @@ $d = scale_by_log($a, -2.5);
 var_dump($d); // Never reached
 echo "<br>";
 }
-
-function debuggeri_filter($n){
-  $pop = array_shift($n);
-  $args = implode(",",$n['args']);
-  $m = "   rivi ".$n['line'].", ".$n['function']."($args)";  
-  return $m; 
-  }
-
-//var_export($_POST);
-function debuggeri_backtrace($errorMsg){
-  if (!DEBUG) return;  
-  $backtrace = debug_backtrace();   
-  //file_put_contents("debug_log.txt", $msg."\n".var_export($backtrace,true)."\n", FILE_APPEND);
-  $dummy = array_shift($backtrace);
-  $backtrace = array_map('debuggeri_filter', $backtrace);
-  $msg = date("Y-m-d H:i:s")." Check ".$errorMsg;
-  file_put_contents("debug_log.txt", $msg."\n".implode("\n",$backtrace)."\n", FILE_APPEND);
-  }
-
-function debuggeri_shutdown($parametrit = ""){
-  $error = error_get_last();
-  $type = ($error) ? $error['type'] : "";
-  //$timezone = date_default_timezone_get();
-  if ($error['type'] === E_ERROR){
-    $msg = date("Y-m-d H:i:s")." ohjelman suoritus päättyi.";
-    $msg.= " Tappava virhe $type rivillä ".$error['line'].".";     
-    $msg = utf8_decode($msg);
-    $path = $_SERVER['DOCUMENT_ROOT']."/debug_shutdown.txt";
-    file_put_contents($path,$msg."\n", FILE_APPEND);
-    }    
-  /*else { 
-    $msg = utf8_decode($msg);
-    file_put_contents($path,$msg."\n", FILE_APPEND);
-    }*/
-    //else debuggeri_backtrace("Muu virhe rivillä ".$error['line']);  
-  }  
   
 function tulostasessio(){
 echo "Session-parametrit:<br>";	
@@ -228,6 +160,17 @@ echo "</ul>";
 return;
 }
 
+function dummyII($parI = "",$parII = ""){
+debuggeri_backtrace(__FUNCTION__.",parI:$parI,parII:$parII");
+puuttuvan_funktion_kutsu();
+return "tulos_dummyI,parI:$parI,parII:$parII";
+}
+
+function dummyI($parI = "",$parII = ""){
+/* Testataan E_ERROR-virheeseen pysähdyttäessä edeltävää omaa backtrace-listausta kutsuketjussa */    
+$tulos = dummyII($parI,$parII);    
+}
+
 function kielet(){
 global $db;	
 $query = "SELECT language_id,name FROM language ORDER BY name";
@@ -235,6 +178,7 @@ $result = $db->query($query);
 echo "<select required class=\"form-control\" name=\"language_id\">";
 echo "<option value=\"\"></option><br>";
 while (list($id,$name) = $result->fetch_row()){
+  //dummyI($id,$name);  
   if (isset($_POST['language_id']) and $_POST['language_id'] == $id)
 	  $selected = " SELECTED=\"SELECTED\"";
   else $selected = "";
@@ -272,7 +216,6 @@ debuggeri_backtrace(__FUNCTION__.",$query");
 function rating(){
 global $db;
 $errormsg = "<div class=\"invalid-feedback\" style=\"margin-top:-0.25rem;\">Valitse ikäraja.</div>";
-
 $query = "SHOW COLUMNS FROM film LIKE 'rating'";
 $result = $db->query($query);
 $row = $result->fetch_assoc();
@@ -331,14 +274,16 @@ return;
 
 /* OHJELMA ALKAA TÄSTÄ */
 //var_export($_SERVER);
-error_reporting(0);
 define('DEBUG', true);
+//$timezone = date_default_timezone_get();
 date_default_timezone_set("Europe/Helsinki");
+include("debuggeri.php");
+//$old_error_reporting = error_reporting(0);
 $old_error_handler = set_error_handler("debug_error_handler");
 register_shutdown_function('debuggeri_shutdown');
 //trigger_error("Testiä",E_USER_ERROR);
+//trigger_error("Testiä",E_USER_WARNING);
 //debug_test_error_handler();
-//$x = dummyfunction();
 
 $remote = in_array($_SERVER['REMOTE_ADDR'],array('127.0.0.1','REMOTE_ADDR' => '::1'));
 if (!$remote) {	
@@ -354,10 +299,20 @@ else {
 //echo "server:$server,user:$user";
 //exit;
 
-$db = new mysqli($server,$user,$password,'sakila');
-if (mysqli_connect_errno()){
-   echo "Virhe tietokantayhteydessä.<br>";
+try {
+  $db = new mysqli($server,$user,$password,'sakila');
+  if (mysqli_connect_errno()){  
+    throw new Exception("Virhe tietokantayhteydessä", 42);
+    }
   }
+catch (Exception $e) {
+  if (defined('DEBUG') and DEBUG)  
+    echo "Poikkeus ".$e->getCode().": ".$e->getMessage()." ".
+    "rivillä ". $e->getLine().", tiedosto: ".$e->getFile()."<br />";
+  else echo "Virhe tietokantayhteydessä. Yritä hetken päästä uudestaan.<br>";
+  exit;
+  }
+  
   
   /*
 $query = "SELECT f.title,c.name FROM film f,film_category fc,category c WHERE
@@ -404,17 +359,7 @@ while ($row = $result->fetch_assoc()){
 </nav>    
     
 <div class="container">
-<?php
-/*$error = true;  
-try {
-  if ($error)  
-    throw new Exception("Tässä on aluksi esimerkki virheestä.", 42);
-  }
-catch (Exception $e) {
-  echo "Exception ". $e->getCode(). ": ". $e->getMessage()."".
-  " tiedostossa ". $e->getFile(). " rivillä ". $e->getLine(). "<br />";
-  }*/
-?>
+
 <!-- Kopioitu malli -->
 <!--  <form class="form-horizontal">
   <div class="form-group">
