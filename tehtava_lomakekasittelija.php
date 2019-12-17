@@ -19,9 +19,9 @@ foreach ($kentat AS $kentta) {
 
 
 if ($error_required or $error_numeric){
-/* Lomakkeen kenttien jo syötetyt arvot palautetaan valmiiksi lomakkeelle. */    
   echo "<form name=\"error_form\" action=\"tehtava_db_testi.php\" method=\"post\">";
   if ($error_required){
+    /* Lomakkeelta puuttuvat kentät palautetaan virheinä lomakkeelle. */    
     foreach ($error_required AS $error_field => $error_value)
     echo "<input type=\"hidden\" value=\"$error_field\" name=\"error_required[]\">";
     }
@@ -30,6 +30,7 @@ if ($error_required or $error_numeric){
     echo "<input type=\"hidden\" value=\"$error_field\" name=\"error_numeric[]\">";
     }
   foreach ($kentat AS $kentta){
+  /* Lomakkeen kenttien jo syötetyt arvot palautetaan valmiiksi lomakkeelle. */    
     $arvo = isset($_POST[$kentta]) ? $_POST[$kentta] : ""; 
     if (is_array($arvo)) {
       $name = $kentta."[]";	
