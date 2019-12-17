@@ -1,5 +1,9 @@
 <?php
 /* Testaus 17.12.2019*/
+/* Responsiivinen navigointi hampurilaispainikkeella ja 
+   responsiivinen lomake, jossa on sekä client- että server-validointi bootstrap 4 perustuen. 
+   PHP-debuggausrutiineja omassa tiedostossaan.
+*/
 if (!session_id()) session_start();
 ?>
 <!DOCTYPE html>

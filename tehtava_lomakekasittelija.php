@@ -1,7 +1,7 @@
 <?php
-//echo "lomakekasittelija.php<br>";
-//var_export($_POST);
-//exit;
+/* Responsiivinen lomake, jossa on sekä client- että server-validointi bootstrap 4 perustuen. 
+   PHP-debuggausrutiineja omassa tiedostossaan.
+*/
 include('debuggeri.php');  
 debuggeri(basename($_SERVER['SCRIPT_NAME']).",post:".var_export($_POST,true));
 $error_required = array();
