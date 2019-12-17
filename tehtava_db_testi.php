@@ -72,6 +72,10 @@ body,select,textarea {font-family:Arial;}
 </style>
 
 <script>
+function toggleError(nimi){
+  $("[name='"+nimi+"']").parent().find(".form-control").addClass('is-invalid');
+  }    
+  
 // Example starter JavaScript for disabling form submissions if there are invalid fields
 (function() {
   'use strict'; 
@@ -88,6 +92,11 @@ body,select,textarea {font-family:Arial;}
         form.classList.add('was-validated');
       }, false);
     });
+    
+ $('.is-invalid').on('keyup',function () {
+    $(this).removeClass('is-invalid');
+    });   
+    
   }, false);
 })();
 </script>
@@ -251,10 +260,9 @@ echo "sessio on suljettu,session_id:".session_id()."<br>";
 return;
 }
 
-function virhe($kentta){
+function haevirheluokat($kentta){
+global $errors_r,$errors_n;    
 $classes = array();
-$errors_r = isset($_POST['error_required']) ? $_POST['error_required'] : array();
-$errors_n = isset($_POST['error_numeric']) ? $_POST['error_numeric'] : array();
 if (array_search($kentta,$errors_r) !== false){
   $classes[] = "virhe_missing";	
   }
@@ -263,8 +271,19 @@ if (array_search($kentta,$errors_n) !== false){
   }
 if (!$classes) $classes[] = "tyhja";	
 $class = implode(" ",$classes);
-echo $class;
+return $class;
+}
+
+function virhe($kentta){    
+$classes = haevirheluokat($kentta);    
+echo $classes; 
 return;
+}
+
+function server_validation($kentta){
+if (haevirheluokat($kentta) <> 'tyhja'){
+  echo "<script>toggleError('$kentta');</script>";  
+  }      
 }
 
 function nayta($kentta){
@@ -284,7 +303,6 @@ register_shutdown_function('debuggeri_shutdown');
 //trigger_error("Testiä",E_USER_ERROR);
 //trigger_error("Testiä",E_USER_WARNING);
 //debug_test_error_handler();
-
 $remote = in_array($_SERVER['REMOTE_ADDR'],array('127.0.0.1','REMOTE_ADDR' => '::1'));
 if (!$remote) {	
   $password = "6#vWHD_$";
@@ -313,6 +331,8 @@ catch (Exception $e) {
   exit;
   }
   
+$errors_r = isset($_POST['error_required']) ? $_POST['error_required'] : array();
+$errors_n = isset($_POST['error_numeric']) ? $_POST['error_numeric'] : array();  
   
   /*
 $query = "SELECT f.title,c.name FROM film f,film_category fc,category c WHERE
@@ -394,51 +414,59 @@ while ($row = $result->fetch_assoc()){
 <div class="form-group row">
 <label class="control-label col-sm-2 relative">Nimi:</label><span class="<?php virhe('title');?>">*</span>
 <div class="col-sm-10">
-<input required class="form-control teksti" type="text" name="title" value = "<?php nayta('title');?>">
-<div class="invalid-feedback">Kirjoita nimi.</div></div>
-</div>
+<input required class="form-control teksti" type="text" name="title" value="<?php nayta('title');?>">
+<div class="invalid-feedback">Kirjoita nimi.</div>
+<?php server_validation('title');?>
+</div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Kuvaus:</label><span class="<?php virhe('description');?>">*</span>
 <div class="col-sm-10">
 <textarea required class="form-control teksti" rows="4" cols="40" name="description"><?php nayta('description');?></textarea>
 <!--<div class="valid-feedback">Ok</div>-->
 <div class="invalid-feedback">Kirjoita kuvaus.</div>
+<?php server_validation('description');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Julkaisuvuosi:</label><span class="<?php virhe('release_year');?>">*</span>
 <div class="col-sm-10">
 <input required class="form-control lukema" min="1900" max="2100" type="number" name="release_year" placeholder="2019" value="<?php nayta('release_year');?>">
 <div class="invalid-feedback">Lisää julkaisuvuosi.</div>
+<?php server_validation('release_year');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Kieli:</label><span class="<?php virhe('language_id');?>">*</span>
 <div class="col-sm-5">
 <?php echo kielet();?>
 <div class="invalid-feedback">Valitse kieli.</div>    
+<?php server_validation('language_id');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Vuokra-aika:</label><span class="<?php virhe('rental_duration');?>">*</span>
 <div class="col-sm-10">
 <input required class="form-control lukema" type="number" min="1" max="365" name="rental_duration" placeholder="1" value="<?php nayta('rental_duration');?>"><span class="yksikko">pv</span><br>
-<div class="invalid-feedback">Lisää vuokra-aika.</div>    
+<div class="invalid-feedback">Lisää vuokra-aika.</div>  
+<?php server_validation('rental_duration');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Vuokrahinta:</label><span class="<?php virhe('rental_rate');?>">*</span>
 <div class="col-sm-10">
 <input required pattern="^\d+(,\d{1,2}){0,1}$" class="form-control lukema" type="text" name="rental_rate" value="<?php nayta('rental_rate');?>"><span class="yksikko">€</span><br>
 <div class="invalid-feedback">Lisää vuokrahinta.</div>   
+<?php server_validation('rental_rate');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Pituus:</label><span class="<?php virhe('length');?>">*</span>
 <div class="col-sm-10">
 <input required class="form-control lukema" type="number" name="length"><span class="yksikko">min</span><br>
 <div class="invalid-feedback">Lisää pituus.</div>  
+<?php server_validation('length');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Korvaushinta:</label><span class="<?php virhe('replacement_cost');?>">*</span>
 <div class="col-sm-10">
 <input required pattern="^\d+(,\d{1,2}){0,1}$" class="form-control lukema" type="text" name="replacement_cost"><span class="yksikko">€</span><br>
 <div class="invalid-feedback">Lisää korvaushinta.</div>  
+<?php server_validation('replacement_cost');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Ikäraja:</label><span class="<?php virhe('rating');?>">*</span>
