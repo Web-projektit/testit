@@ -36,22 +36,33 @@ function debug_error_handler($errno,$errstr,$errfile,$errline){
 }
 
 
+function debuggeri($arvo){
+if (defined('DEBUG') and !DEBUG) return;
+$msg = is_array($arvo) ? var_export($arvo,true) : $arvo; 
+$msg = date("Y-m-d H:i:s")." ".$msg;
+file_put_contents("debug_log.txt", $msg."\n", FILE_APPEND);
+}
+
+
 function debuggeri_filter($n){
-  $pop = array_shift($n);
+  //$pop = array_shift($n);
   $args = implode(",",$n['args']);
-  $m = $n['file'].",rivi ".$n['line'].", ".$n['function']."($args)";  
+  $m = basename($n['file']).",rivi ".$n['line'].",".$n['function']."($args)";  
   return $m; 
   }
 
 
 function debuggeri_backtrace($errorMsg){
   if (defined('DEBUG') and !DEBUG) return;  
-  $backtrace = debug_backtrace();   
-  array_shift($backtrace);
-  $backtrace = array_reverse($backtrace);
-  $backtrace = array_map('debuggeri_filter', $backtrace);
   $msg = date("Y-m-d H:i:s")." ".$errorMsg;
-  file_put_contents("debug_log.txt", $msg."\n".implode("\n",$backtrace)."\n", FILE_APPEND);
+  if ($backtrace = debug_backtrace()) {  
+    //file_put_contents("debug_log.txt", __FUNCTION__.",".var_export($backtrace,true)."\n", FILE_APPEND);  
+    array_shift($backtrace);
+    $backtrace = array_reverse($backtrace);
+    $backtrace = array_map('debuggeri_filter', $backtrace);
+    $msg.= "\n".implode("\n",$backtrace);
+    }
+  file_put_contents("debug_log.txt", $msg."\n", FILE_APPEND);
   }
 
 
@@ -69,5 +80,6 @@ function debuggeri_shutdown($parametrit = ""){
     }    
   }  
 
+if (defined('DEBUG') and !DEBUG) $old_error_reporting = error_reporting(0);  
 ?>
 

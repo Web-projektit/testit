@@ -1,11 +1,12 @@
 <?php
 /* Kommentti NetBeans 3.12.2019 klo 13:45*/
   session_start();
-  
+  //$a = "1,1";
+  //echo "a: ".($a + 0)."<br>";
   $_SESSION['sess_var'] = "Hello world, terve maailma!";
   //date_default_timezone_set("Europe/Helsinki");
   $ajankohta = date("Y-m-d H:i:s");
-
+  echo ($x + 1):
   echo $ajankohta.': The content of $_SESSION[\'sess_var\'] is '
         .$_SESSION['sess_var'].'<br />';
   
