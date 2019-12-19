@@ -307,8 +307,8 @@ register_shutdown_function('debuggeri_shutdown');
 //trigger_error("Testiä",E_USER_ERROR);
 //trigger_error("Testiä",E_USER_WARNING);
 //debug_test_error_handler();
-$remote = in_array($_SERVER['REMOTE_ADDR'],array('127.0.0.1','REMOTE_ADDR' => '::1'));
-if (!$remote) {	
+$local = in_array($_SERVER['REMOTE_ADDR'],array('127.0.0.1','REMOTE_ADDR' => '::1'));
+if (!$local) {	
   $password = "6#vWHD_$";
   $user = "azure";
   $server = "localhost:49492";

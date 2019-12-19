@@ -6,7 +6,7 @@
   $_SESSION['sess_var'] = "Hello world, terve maailma!";
   //date_default_timezone_set("Europe/Helsinki");
   $ajankohta = date("Y-m-d H:i:s");
-  echo ($x + 1):
+  //echo ($x + 1):
   echo $ajankohta.': The content of $_SESSION[\'sess_var\'] is '
         .$_SESSION['sess_var'].'<br />';
   
@@ -25,6 +25,7 @@
  // close curl resource to free up system resources 
  curl_close($ch);
  $haku = stristr($output, "ravi");
- echo $haku;
+ file_put_contents("debug_curl.txt", $output."\n", FILE_APPEND);
+ echo $output;
 ?>
 <a href="page2.php">Next page</a> 
