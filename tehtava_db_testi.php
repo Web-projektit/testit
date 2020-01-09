@@ -1,8 +1,10 @@
 <?php
-/* Testaus 17.12.2019*/
+//echo "HERE";
+/* Harjoitus 9.1.2020 */
 /* Responsiivinen navigointi hampurilaispainikkeella ja 
    responsiivinen lomake, jossa on sekä client- että server-validointi bootstrap 4 perustuen. 
-   PHP-debuggausrutiineja omassa tiedostossaan.
+   PHP-debuggausrutiineja omassa tiedostossaan. Nyt myös malliksi AJAX-
+ * tekniikkaan perustuvaa validointia.
 */
 if (!session_id()) session_start();
 ?>
@@ -55,6 +57,14 @@ body,select,textarea {font-family:Arial;}
   vertical-align:top;*/
   color:blue;
   }  
+#action_form select {
+  width:auto;
+  }    
+.control-label {
+  white-space:nowrap;
+  min-width:100px;
+}
+.padding-top-10 {padding-top:10px;}
 .list-group-item label {white-space:nowrap;}
 .list-group-item {border:0;}
 /*.control-label {min-width:150px;}*/
@@ -76,15 +86,24 @@ body,select,textarea {font-family:Arial;}
 </style>
 
 <script>
+    
+function validate_jquery(event){
+/*event.preventDefault();
+event.stopPropagation();
+return false;   */ 
+}    
+    
 function toggleError(nimi){
-  $("[name='"+nimi+"']").parent().find(".form-control").addClass('is-invalid');
+  //$("[name='"+nimi+"']").parent().find(".form-control").addClass('is-invalid');
+  $("[name='"+nimi+"']").addClass('is-invalid');
   }    
   
-// Example starter JavaScript for disabling form submissions if there are invalid fields
-(function() {
-  'use strict'; 
-  window.addEventListener('load', function() {
-    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+
+ 
+ (function() {
+  'use strict';
+  window.addEventListener('load', function() {  
+    // Get the forms we want to add validation styles to
     var forms = document.getElementsByClassName('needs-validation');
     // Loop over them and prevent submission
     var validation = Array.prototype.filter.call(forms, function(form) {
@@ -92,17 +111,51 @@ function toggleError(nimi){
         if (form.checkValidity() === false) {
           event.preventDefault();
           event.stopPropagation();
-        }
+          }
+        else {
+          event.preventDefault();
+          event.stopPropagation();
+          //alert('here');
+          var formdata = $(form).serialize()+"&validation=1";  
+          $.post("tehtava_lomakekasittelija.php",formdata,function(data) {
+            // data: array['title','rating'..] //
+            console.log("data:",data);
+            if (Array.isArray(data)){
+              data.forEach(v => {
+                console.log("v:",v); 
+                $("[name='"+v+"']").val('');
+               }) 
+              }
+            else {
+              form.submit();  
+              }
+            }, "json");
+            
+          }  //else     
         form.classList.add('was-validated');
       }, false);
     });
     
- $('.is-invalid').on('keyup',function () {
-    $(this).removeClass('is-invalid');
-    });   
-    
   }, false);
 })();
+ 
+$(document).ready(function(){
+    
+  $(document.body).on('keyup','.on-virhe',function(event) {
+    /* Tässä voitaisiin piilottaa virheteksti, tosin se jäisi piiloon. */  
+    $(this).removeClass('on-virhe');
+    //console.log("next:",$(this).parent().find('.invalid-feedback').html());
+    $(this).parent().find('.invalid-feedback').hide();
+    //$(this).parent().find('.invalid-feedback').css('display','none');
+    //$(this).parent().find('.invalid-feedback').toggle();
+    }); 
+    
+ /* $('.on-virhe').on('keyup',function() {
+    $(this).removeClass('on-virhe');
+    $(this).parent().find('.invalid-feedback').hide();
+    });   */
+  });
+
 </script>
 
 
@@ -299,7 +352,7 @@ return;
 //var_export($_SERVER);
 define('DEBUG', true);
 //$timezone = date_default_timezone_get();
-date_default_timezone_set("Europe/Helsinki");
+//date_default_timezone_set("Europe/Helsinki");
 include("debuggeri.php");
 //$old_error_reporting = error_reporting(0);
 $old_error_handler = set_error_handler("debug_error_handler");
@@ -412,7 +465,7 @@ while ($row = $result->fetch_assoc()){
     </div>   
     
 </form>-->
-<form class="needs-validation" novalidate id="action_form" action="tehtava_lomakekasittelija.php" method="post">
+<form class="needs-validation" novalidate id="action_form" action="tehtava_lomakekasittelija.php" method="post" onsubmit="validate_jquery();">
 <fieldset>
 <legend>Uusi elokuva</legend>
 <div class="form-group row">
@@ -439,7 +492,7 @@ while ($row = $result->fetch_assoc()){
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Kieli:</label><span class="<?php virhe('language_id');?>">*</span>
-<div class="col-sm-5">
+<div class="col-sm-10">
 <?php echo kielet();?>
 <div class="invalid-feedback">Valitse kieli.</div>    
 <?php server_validation('language_id');?>
@@ -473,7 +526,7 @@ while ($row = $result->fetch_assoc()){
 <?php server_validation('replacement_cost');?>
 </div></div>
 <div class="form-group row">
-<label class="control-label col-sm-2">Ikäraja:</label><span class="<?php virhe('rating');?>">*</span>
+<label class="control-label col-sm-2 padding-top-10">Ikäraja:</label><span class="<?php virhe('rating');?>">*</span>
 <div class="col-sm-10">    
 <?php rating();?>
 </div></div>
@@ -487,6 +540,7 @@ while ($row = $result->fetch_assoc()){
 <input class="btn btn-primary" type="submit" value="Tallenna"><br>
 </div></div>
 </fieldset>
+<input type="hidden" name="validate" value="1">
 </form>
 <ul>
 <!--<p>session:<?php echo session_id();?></p>-->
