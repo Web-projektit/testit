@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Javascript esimerkki</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+const arr = ["Joy", "Wangari", "Warugu"];
+const newArr = ["joykare", ...arr];    
+    
+function myFunc(x, y, ...params) { // used rest operator here
+  console.log("*** myFunc ***");
+  console.log(x);
+  console.log(y);
+  console.log(params);
+}
+
+var inputs = ["a", "b", "c", "d", "e", "f"];
+
+myFunc(...inputs); // used spread operator here
+// myFunc("a","b",["c","d","e","f"])
+// "a"
+// "b"
+// ["c", "d", "e", "f"]    
+    
+    
+//var new_array = arr.map(function callback(currentValue[, index[, array]]) {
+//}[, thisArg])
+    
+function noisy(f,g) {
+  console.log("*** noisy ***,f:" + f);
+  //console.log("*** noisy ***,dummy:" + dummy);  
+  //var parametrit = [1,2,3];
+  return (...args) => {
+    console.log("args:" + args);
+    var result = f(...args);
+    console.log("args:" + args + ",result:" + result);
+    return (...args_max) => {
+      var result_max = g(...args_max);
+      console.log("args_max:"+args_max+ ",result_max:" + result_max);
+      return result_max;
+      };
+  };
+}
+noisy(Math.min,Math.max)(3,2,1)(9,10,11);
+// → calling with [3,2,1]
+// → called with [3,2,1],returned 1    
+
+var name = 'Brandon';
+var age = 26;
+function greet(arr, nameArg, ageArg) {
+  console.log("*** greet ***,arr:" + arr);    
+  console.log(arr[0] + nameArg + arr[1] + ageArg + arr[2]);
+  }
+greet`Woah, ${name} is ${age}?`;
+// "Woah, Brandon is 26?"
+
+function template(strings,...keys) {
+  console.log("*** template ***");
+  console.log("strings:" + strings);
+  console.log("keys:" + keys);
+  return (...values) => {
+    console.log("values:" + values);  
+    var dict = values[values.length - 1] || {};
+    var result = [strings[0]];
+    keys.forEach(function(key, i) {
+      var value = Number.isInteger(key) ? values[key] : dict[key];
+      console.log("key:",key,",value:",value);      
+      result.push(value,strings[i + 1]);
+    });
+    console.log("result:" + result);
+    return result.join('');
+  };
+}
+</script>
+    
+    </head>
+    <body>
+        <div id="output">
+            TODO write content
+                
+<script>
+console.log("*** operaatioita ***");    
+console.log("5"+5) // (1)
+console.log("5"-1) // (2)
+//console.log(10*NULL) // (3)
+console.log("eight"*8) // (4)
+//console.log(TRUE == 0) // (5)    
+    
+var t1Closure = template`${0}${1}${0}!`;
+//console.log("t1Closure:" + t1Closure);
+document.getElementById('output').innerHTML = t1Closure('Y', 'A') + '<br>';  // "YAY!"
+var t2Closure = template`${0} ${'foo'}, ${'comment'}!`;
+document.getElementById('output').innerHTML+= t2Closure('Good',{foo:'World',comment:'It is me!'});  // "Hello World!"
+</script>
+
+        
+        </div>
+    </body>
+</html>

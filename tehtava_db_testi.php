@@ -1,5 +1,11 @@
 <?php
-/* Testaus */
+//echo "HERE";
+/* Harjoitus 9.1.2020 */
+/* Responsiivinen navigointi hampurilaispainikkeella ja 
+   responsiivinen lomake, jossa on sekä client- että server-validointi bootstrap 4 perustuen. 
+   PHP-debuggausrutiineja omassa tiedostossaan. Nyt myös malliksi AJAX-
+ * tekniikkaan perustuvaa validointia.
+*/
 if (!session_id()) session_start();
 ?>
 <!DOCTYPE html>
@@ -9,14 +15,35 @@ if (!session_id()) session_start();
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!--
+<!-- Bootstrap 3 
 <link rel="stylesheet" href="bootstrap.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>-->
+
+<!-- Bootstrap 4.3.1
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>-->
+
+<!-- Bootstrap 4.4.1 -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+<script>
+var str = '0,01';
+var desimaalit = 3;
+//var pattern = /^\d+(,\d{1,2}){0,1}$/;    
+//var myArray = str.search(pattern);
+//var pattern = "^\\d+(,\\d{1,"+desimaalit+"}){0,1}$"; 
+var pattern = "^\\d+(,\\d{1,"+desimaalit+"})?$";   
+var pattern = "^\\d+(,\\d{1,2})?$";    
+re = new RegExp(pattern,"g");
+var testi = re.test(str);
+console.log('regexp:',testi);
+</script>
 
 <link rel="stylesheet" href="bootstrap_media_queries.css">
 </head>
@@ -30,14 +57,23 @@ body,select,textarea {font-family:Arial;}
   vertical-align:top;*/
   color:blue;
   }  
+#action_form select {
+  width:auto;
+  }    
+.control-label {
+  white-space:nowrap;
+  min-width:100px;
+}
+.padding-top-10 {padding-top:10px;}
 .list-group-item label {white-space:nowrap;}
 .list-group-item {border:0;}
+/*.control-label {min-width:150px;}*/
 .checkbox {margin-left:25px;}
 /*input,textarea,select {font-size:16px;}*/  
 /*.radio {display:inline;padding-right:4px;padding-left:4px;}*/
 .yksikko {padding-left:4px;}
 /*.teksti {display:inline-block;width:200px;}*/
-.lukema {display:inline-block;width:50px;}
+.lukema {display:inline-block;width:100px;}
 .ul-inline {flex-direction:row;}
 .virhe_group {list-style-type:none;}
 .virhe_p {color:red;list-style-type:none;}
@@ -50,11 +86,24 @@ body,select,textarea {font-family:Arial;}
 </style>
 
 <script>
-// Example starter JavaScript for disabling form submissions if there are invalid fields
-(function() {
+    
+function validate_jquery(event){
+/*event.preventDefault();
+event.stopPropagation();
+return false;   */ 
+}    
+    
+function toggleError(nimi){
+  //$("[name='"+nimi+"']").parent().find(".form-control").addClass('is-invalid');
+  $("[name='"+nimi+"']").addClass('is-invalid');
+  }    
+  
+
+ 
+ (function() {
   'use strict';
-  window.addEventListener('load', function() {
-    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  window.addEventListener('load', function() {  
+    // Get the forms we want to add validation styles to
     var forms = document.getElementsByClassName('needs-validation');
     // Loop over them and prevent submission
     var validation = Array.prototype.filter.call(forms, function(form) {
@@ -62,20 +111,102 @@ body,select,textarea {font-family:Arial;}
         if (form.checkValidity() === false) {
           event.preventDefault();
           event.stopPropagation();
-        }
+          }
+        else {
+          event.preventDefault();
+          event.stopPropagation();
+          //alert('here');
+          var formdata = $(form).serialize()+"&validation=1";  
+          $.post("tehtava_lomakekasittelija.php",formdata,function(data) {
+            // data: array['title','rating'..] //
+            console.log("data:",data);
+            if (Array.isArray(data)){
+              data.forEach(v => {
+                console.log("v:",v); 
+                $("[name='"+v+"']").val('');
+               }) 
+              }
+            else {
+              form.submit();  
+              }
+            }, "json");
+            
+          }  //else     
         form.classList.add('was-validated');
       }, false);
     });
+    
   }, false);
 })();
+ 
+$(document).ready(function(){
+    
+  $(document.body).on('keyup','.on-virhe',function(event) {
+    /* Tässä voitaisiin piilottaa virheteksti, tosin se jäisi piiloon. */  
+    $(this).removeClass('on-virhe');
+    //console.log("next:",$(this).parent().find('.invalid-feedback').html());
+    $(this).parent().find('.invalid-feedback').hide();
+    //$(this).parent().find('.invalid-feedback').css('display','none');
+    //$(this).parent().find('.invalid-feedback').toggle();
+    }); 
+    
+ /* $('.on-virhe').on('keyup',function() {
+    $(this).removeClass('on-virhe');
+    $(this).parent().find('.invalid-feedback').hide();
+    });   */
+  });
+
 </script>
 
 
 <body>
 
 <?php
-//var_export($_POST);
 
+// function to test the error handling
+function scale_by_log($vect, $scale){
+    if (!is_numeric($scale) || $scale <= 0) {
+        trigger_error("log(x) for x <= 0 is undefined, you used: scale = $scale", E_USER_ERROR);
+        }
+    if (!is_array($vect)) {
+        trigger_error("Incorrect input vector, array of values expected", E_USER_WARNING);
+        return null;
+        }
+    $temp = array();
+    foreach($vect as $pos => $value) {
+        if (!is_numeric($value)) {
+            trigger_error("Value at position $pos is not a number, using 0 (zero)", E_USER_NOTICE);
+            $value = 0;
+            }
+        $temp[$pos] = log($scale) * $value;
+        }
+    return $temp;
+}
+
+function debug_test_error_handler(){
+// set to the user defined error handler
+// trigger some errors, first define a mixed array with a non-numeric item
+echo "vector a:<br>";
+$a = array(2, 3, "foo", 5.5, 43.3, 21.11);
+print_r($a);
+// now generate second array
+echo "<br>----\nvector b - a notice (b = log(PI) * a):<br>";
+/* Value at position $pos is not a number, using 0 (zero) */
+$b = scale_by_log($a, M_PI);
+print_r($b);
+// this is trouble, we pass a string instead of an array
+echo "<br>----\nvector c - a warning<br>";
+/* Incorrect input vector, array of values expected */
+$c = scale_by_log("not array", 2.3);
+var_dump($c); // NULL
+// this is a critical error, log of zero or negative number is undefined
+echo "<br>----\nvector d - fatal error<br>";
+/* log(x) for x <= 0 is undefined, you used: scale = $scale" */
+$d = scale_by_log($a, -2.5);
+var_dump($d); // Never reached
+echo "<br>";
+}
+  
 function tulostasessio(){
 echo "Session-parametrit:<br>";	
 /*echo "post:<br>";
@@ -95,19 +226,32 @@ echo "</ul>";
 return;
 }
 
+function dummyII($parI = "",$parII = ""){
+debuggeri_backtrace(__FUNCTION__.",parI:$parI,parII:$parII");
+puuttuvan_funktion_kutsu();
+return "tulos_dummyI,parI:$parI,parII:$parII";
+}
+
+function dummyI($parI = "",$parII = ""){
+/* Testataan E_ERROR-virheeseen pysähdyttäessä edeltävää omaa backtrace-listausta kutsuketjussa */    
+$tulos = dummyII($parI,$parII);    
+}
+
 function kielet(){
 global $db;	
 $query = "SELECT language_id,name FROM language ORDER BY name";
 $result = $db->query($query);
-echo "<select class=\"form-control\" name=\"language_id\">";
+echo "<select required class=\"form-control\" name=\"language_id\">";
 echo "<option value=\"\"></option><br>";
 while (list($id,$name) = $result->fetch_row()){
+  //dummyI($id,$name);  
   if (isset($_POST['language_id']) and $_POST['language_id'] == $id)
 	  $selected = " SELECTED=\"SELECTED\"";
   else $selected = "";
   echo "<option value=\"$id\"$selected>$name</option><br>";
   }
 echo "</select>";	
+debuggeri_backtrace(__FUNCTION__.",$query");
 }
 
 function specialfeatures(){
@@ -132,10 +276,12 @@ foreach ($strArr AS $feature){
   echo "<div class=\"checkbox\"><label class=\"form-check-label\"><input class=\"form-check-input\" type=\"checkbox\" name=\"special_features[]\" "
        . "value=$feature $checked>$f</label></div>";
   }	
+debuggeri_backtrace(__FUNCTION__.",$query");
 }
 
 function rating(){
-global $db;	
+global $db;
+$errormsg = "<div class=\"invalid-feedback\" style=\"margin-top:-0.25rem;\">Valitse ikäraja.</div>";
 $query = "SHOW COLUMNS FROM film LIKE 'rating'";
 $result = $db->query($query);
 $row = $result->fetch_assoc();
@@ -154,11 +300,13 @@ foreach ($strArr AS $rating){
   //echo "$feature,checked:$checked,feature_set:$feature_set,box_set:$box_set<br>";
   //echo "<li class=\"list-group-item\"><label class=\"radio\">$r</label><input type=\"radio\" name=\"rating\" 
   //      value=$rating $checked></li>";
-   echo "<li class=\"list-group-item\"><input class=\"form-check-input\" type=\"radio\" name=\"rating\" 
-        value=$rating $checked><label class=\"form-check-label\">$r</label></li>";
-
+  echo "<li class=\"list-group-item\"><input class=\"form-check-input\" type=\"radio\" name=\"rating\" 
+        value=$rating $checked required><label class=\"form-check-label\">$r</label></li>";
   }	
-echo "</ul>";  
+echo "</ul>"; 
+echo "<input style=\"display:none;\" type=\"radio\" name=\"rating\" 
+        value='' required>$errormsg";   
+debuggeri_backtrace(__FUNCTION__.",$query");
 }
 
 
@@ -169,10 +317,9 @@ echo "sessio on suljettu,session_id:".session_id()."<br>";
 return;
 }
 
-function virhe($kentta){
+function haevirheluokat($kentta){
+global $errors_r,$errors_n;    
 $classes = array();
-$errors_r = isset($_POST['error_required']) ? $_POST['error_required'] : array();
-$errors_n = isset($_POST['error_numeric']) ? $_POST['error_numeric'] : array();
 if (array_search($kentta,$errors_r) !== false){
   $classes[] = "virhe_missing";	
   }
@@ -181,18 +328,40 @@ if (array_search($kentta,$errors_n) !== false){
   }
 if (!$classes) $classes[] = "tyhja";	
 $class = implode(" ",$classes);
-echo $class;
+return $class;
+}
+
+function virhe($kentta){    
+$classes = haevirheluokat($kentta);    
+echo $classes; 
 return;
 }
 
+function server_validation($kentta){
+if (haevirheluokat($kentta) <> 'tyhja'){
+  echo "<script>toggleError('$kentta');</script>";  
+  }      
+}
+
 function nayta($kentta){
-echo isset($_POST[$kentta]) ? $_POST[$kentta] : ""; 	
+echo isset($_POST[$kentta]) ? $_POST[$kentta] : ""; 
 return;
 }
-	
+
+/* OHJELMA ALKAA TÄSTÄ */
 //var_export($_SERVER);
-$remote = in_array($_SERVER['REMOTE_ADDR'],array('127.0.0.1','REMOTE_ADDR' => '::1'));
-if (!$remote) {	
+define('DEBUG', true);
+//$timezone = date_default_timezone_get();
+//date_default_timezone_set("Europe/Helsinki");
+include("debuggeri.php");
+//$old_error_reporting = error_reporting(0);
+$old_error_handler = set_error_handler("debug_error_handler");
+register_shutdown_function('debuggeri_shutdown');
+//trigger_error("Testiä",E_USER_ERROR);
+//trigger_error("Testiä",E_USER_WARNING);
+//debug_test_error_handler();
+$local = in_array($_SERVER['REMOTE_ADDR'],array('127.0.0.1','REMOTE_ADDR' => '::1'));
+if (!$local) {	
   $password = "6#vWHD_$";
   $user = "azure";
   $server = "localhost:49492";
@@ -205,10 +374,22 @@ else {
 //echo "server:$server,user:$user";
 //exit;
 
-$db = new mysqli($server,$user,$password,'sakila');
-if (mysqli_connect_errno()){
-   echo "Virhe tietokantayhteydessä.<br>";
+try {
+  $db = new mysqli($server,$user,$password,'sakila');
+  if (mysqli_connect_errno()){  
+    throw new Exception("Virhe tietokantayhteydessä", 42);
+    }
   }
+catch (Exception $e) {
+  if (defined('DEBUG') and DEBUG)  
+    echo "Poikkeus ".$e->getCode().": ".$e->getMessage()." ".
+    "rivillä ". $e->getLine().", tiedosto: ".$e->getFile()."<br />";
+  else echo "Virhe tietokantayhteydessä. Yritä hetken päästä uudestaan.<br>";
+  exit;
+  }
+  
+$errors_r = isset($_POST['error_required']) ? $_POST['error_required'] : array();
+$errors_n = isset($_POST['error_numeric']) ? $_POST['error_numeric'] : array();  
   
   /*
 $query = "SELECT f.title,c.name FROM film f,film_category fc,category c WHERE
@@ -247,7 +428,7 @@ while ($row = $result->fetch_assoc()){
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
       </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0">
+    <form id="form_search" class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="search" placeholder="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
@@ -255,17 +436,7 @@ while ($row = $result->fetch_assoc()){
 </nav>    
     
 <div class="container">
-<?php
-/*$error = true;  
-try {
-  if ($error)  
-    throw new Exception("Tässä on aluksi esimerkki virheestä.", 42);
-  }
-catch (Exception $e) {
-  echo "Exception ". $e->getCode(). ": ". $e->getMessage()."".
-  " tiedostossa ". $e->getFile(). " rivillä ". $e->getLine(). "<br />";
-  }*/
-?>
+
 <!-- Kopioitu malli -->
 <!--  <form class="form-horizontal">
   <div class="form-group">
@@ -294,52 +465,68 @@ catch (Exception $e) {
     </div>   
     
 </form>-->
-    
-<form class="" id="action_form" action="tehtava_lomakekasittelija.php" method="post">
+<form class="needs-validation" novalidate id="action_form" action="tehtava_lomakekasittelija.php" method="post" onsubmit="validate_jquery();">
 <fieldset>
 <legend>Uusi elokuva</legend>
 <div class="form-group row">
 <label class="control-label col-sm-2 relative">Nimi:</label><span class="<?php virhe('title');?>">*</span>
 <div class="col-sm-10">
-<input class="form-control teksti" type="text" name="title" value = "<?php nayta('title');?>">
+<input required class="form-control teksti" type="text" name="title" value="<?php nayta('title');?>">
+<div class="invalid-feedback">Kirjoita nimi.</div>
+<?php server_validation('title');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Kuvaus:</label><span class="<?php virhe('description');?>">*</span>
 <div class="col-sm-10">
-<textarea class="form-control teksti" rows="4" cols="40" name="description"><?php nayta('description');?></textarea>
+<textarea required class="form-control teksti" rows="4" cols="40" name="description"><?php nayta('description');?></textarea>
+<!--<div class="valid-feedback">Ok</div>-->
+<div class="invalid-feedback">Kirjoita kuvaus.</div>
+<?php server_validation('description');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Julkaisuvuosi:</label><span class="<?php virhe('release_year');?>">*</span>
 <div class="col-sm-10">
-<input class="form-control lukema" type="text" name="release_year" value="<?php nayta('release_year');?>">
+<input required class="form-control lukema" min="1900" max="2100" type="number" name="release_year" placeholder="2019" value="<?php nayta('release_year');?>">
+<div class="invalid-feedback">Lisää julkaisuvuosi.</div>
+<?php server_validation('release_year');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Kieli:</label><span class="<?php virhe('language_id');?>">*</span>
-<div class="col-sm-5">
+<div class="col-sm-10">
 <?php echo kielet();?>
+<div class="invalid-feedback">Valitse kieli.</div>    
+<?php server_validation('language_id');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Vuokra-aika:</label><span class="<?php virhe('rental_duration');?>">*</span>
 <div class="col-sm-10">
-    <input class="form-control lukema" type="text" name="rental_duration" value="<?php nayta('rental_duration');?>"><span class="yksikko">pv</span><br>
+<input required class="form-control lukema" type="number" min="1" max="365" name="rental_duration" placeholder="1" value="<?php nayta('rental_duration');?>"><span class="yksikko">pv</span><br>
+<div class="invalid-feedback">Lisää vuokra-aika.</div>  
+<?php server_validation('rental_duration');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Vuokrahinta:</label><span class="<?php virhe('rental_rate');?>">*</span>
 <div class="col-sm-10">
-<input class="form-control lukema" type="text" name="rental_rate" value="<?php nayta('rental_rate');?>"><span class="yksikko">€</span><br>
+<input required pattern="^\d+(,\d{1,2}){0,1}$" class="form-control lukema" type="text" name="rental_rate" value="<?php nayta('rental_rate');?>"><span class="yksikko">€</span><br>
+<div class="invalid-feedback">Lisää vuokrahinta.</div>   
+<?php server_validation('rental_rate');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Pituus:</label><span class="<?php virhe('length');?>">*</span>
 <div class="col-sm-10">
-<input class="form-control lukema" type="text" name="length"><span class="yksikko">min</span><br>
+<input required class="form-control lukema" type="number" name="length"><span class="yksikko">min</span><br>
+<div class="invalid-feedback">Lisää pituus.</div>  
+<?php server_validation('length');?>
 </div></div>
 <div class="form-group row">
 <label class="control-label col-sm-2">Korvaushinta:</label><span class="<?php virhe('replacement_cost');?>">*</span>
 <div class="col-sm-10">
-<input class="form-control lukema" type="text" name="replacement_cost"><span class="yksikko">€</span><br>
+<input required pattern="^\d+(,\d{1,2}){0,1}$" class="form-control lukema" type="text" name="replacement_cost"><span class="yksikko">€</span><br>
+<div class="invalid-feedback">Lisää korvaushinta.</div>  
+<?php server_validation('replacement_cost');?>
 </div></div>
 <div class="form-group row">
-<label class="control-label col-sm-2">Ikäraja:</label><span class="<?php virhe('rating');?>">*</span>
+<label class="control-label col-sm-2 padding-top-10">Ikäraja:</label><span class="<?php virhe('rating');?>">*</span>
 <div class="col-sm-10">    
 <?php rating();?>
 </div></div>
@@ -353,6 +540,7 @@ catch (Exception $e) {
 <input class="btn btn-primary" type="submit" value="Tallenna"><br>
 </div></div>
 </fieldset>
+<input type="hidden" name="validate" value="1">
 </form>
 <ul>
 <!--<p>session:<?php echo session_id();?></p>-->
@@ -372,4 +560,3 @@ if (isset($_POST['error_numeric'])) echo "<li class=\"virhe_p\"><span class=\"vi
 </div>
 </body>
 </html>
-

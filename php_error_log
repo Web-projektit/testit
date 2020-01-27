@@ -1,0 +1,47 @@
+[13-Dec-2019 09:30:32 Europe/Berlin] PHP Parse error:  syntax error, unexpected ':' in C:\Users\jaula\web\testit\tehtava_db_testi.php on line 234
+[16-Dec-2019 11:26:05 Europe/Helsinki] PHP Warning:  mysqli::__construct(): (HY000/1045): Access denied for user 'root1'@'localhost' (using password: NO) in C:\Users\jaula\web\testit\tehtava_db_testi.php on line 304
+[16-Dec-2019 11:27:33 Europe/Helsinki] PHP Warning:  mysqli::__construct(): (HY000/1045): Access denied for user 'root1'@'localhost' (using password: NO) in C:\Users\jaula\web\testit\tehtava_db_testi.php on line 304
+[16-Dec-2019 11:30:04 Europe/Helsinki] PHP Fatal error:  Uncaught Error: Call to undefined function puuttuvan_funktion_kutsu() in C:\Users\jaula\web\testit\tehtava_db_testi.php:165
+Stack trace:
+#0 C:\Users\jaula\web\testit\tehtava_db_testi.php(170): dummyII('1', 'English')
+#1 C:\Users\jaula\web\testit\tehtava_db_testi.php(180): dummyI('1', 'English')
+#2 C:\Users\jaula\web\testit\tehtava_db_testi.php(415): kielet()
+#3 {main}
+  thrown in C:\Users\jaula\web\testit\tehtava_db_testi.php on line 165
+[16-Dec-2019 11:30:54 Europe/Helsinki] PHP Warning:  mysqli::__construct(): (HY000/1045): Access denied for user 'root1'@'localhost' (using password: NO) in C:\Users\jaula\web\testit\tehtava_db_testi.php on line 302
+[16-Dec-2019 11:11:03 Europe/Berlin] PHP Parse error:  syntax error, unexpected '",rivi "' (T_CONSTANT_ENCAPSED_STRING) in C:\Users\jaula\web\testit\debuggeri.php on line 42
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: release_year in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 16
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: rental_duration in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 16
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: rental_rate in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 16
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: length in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 16
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: replacement_cost in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 16
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: title in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 71
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: description in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 71
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: release_year in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 71
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: language_id in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 71
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: rental_duration in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 71
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: rental_rate in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 71
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: length in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 71
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: replacement_cost in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 71
+[16-Dec-2019 14:46:39 Europe/Berlin] PHP Notice:  Undefined index: rating in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 71
+[16-Dec-2019 15:46:39 Europe/Helsinki] PHP Notice:  Undefined index: file in C:\Users\jaula\web\testit\debuggeri.php on line 42
+[16-Dec-2019 15:46:39 Europe/Helsinki] PHP Notice:  Undefined index: file in C:\Users\jaula\web\testit\debuggeri.php on line 42
+[16-Dec-2019 15:46:39 Europe/Helsinki] PHP Notice:  Undefined index: file in C:\Users\jaula\web\testit\debuggeri.php on line 42
+[16-Dec-2019 15:51:35 Europe/Helsinki] PHP Notice:  Undefined index: file in C:\Users\jaula\web\testit\debuggeri.php on line 42
+[16-Dec-2019 15:51:35 Europe/Helsinki] PHP Notice:  Undefined index: file in C:\Users\jaula\web\testit\debuggeri.php on line 42
+[16-Dec-2019 15:51:35 Europe/Helsinki] PHP Notice:  Undefined index: file in C:\Users\jaula\web\testit\debuggeri.php on line 42
+[16-Dec-2019 15:59:49 Europe/Helsinki] PHP Notice:  Undefined index: file in C:\Users\jaula\web\testit\debuggeri.php on line 50
+[16-Dec-2019 15:59:49 Europe/Helsinki] PHP Notice:  Undefined index: file in C:\Users\jaula\web\testit\debuggeri.php on line 50
+[16-Dec-2019 15:59:49 Europe/Helsinki] PHP Notice:  Undefined index: file in C:\Users\jaula\web\testit\debuggeri.php on line 50
+[16-Dec-2019 15:37:05 Europe/Berlin] PHP Notice:  Undefined offset: 1 in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 73
+[16-Dec-2019 15:37:05 Europe/Berlin] PHP Notice:  Undefined offset: 2 in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 73
+[16-Dec-2019 15:37:05 Europe/Berlin] PHP Notice:  Undefined offset: 3 in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 73
+[16-Dec-2019 15:37:05 Europe/Berlin] PHP Notice:  Undefined offset: 4 in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 73
+[16-Dec-2019 15:37:05 Europe/Berlin] PHP Notice:  Undefined offset: 5 in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 73
+[16-Dec-2019 15:37:05 Europe/Berlin] PHP Notice:  Undefined offset: 6 in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 73
+[16-Dec-2019 15:37:05 Europe/Berlin] PHP Notice:  Undefined offset: 7 in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 73
+[16-Dec-2019 15:37:05 Europe/Berlin] PHP Notice:  Undefined offset: 8 in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 73
+[16-Dec-2019 15:38:48 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined function keys() in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php:67
+Stack trace:
+#0 {main}
+  thrown in C:\Users\jaula\web\testit\tehtava_lomakekasittelija.php on line 67

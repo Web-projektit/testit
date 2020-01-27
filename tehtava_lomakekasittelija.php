@@ -1,8 +1,9 @@
 <?php
-//echo "lomakekasittelija.php<br>";
-//var_export($_POST);
-//exit;
-  
+/* Responsiivinen lomake, jossa on sekä client- että server-validointi bootstrap 4 perustuen. 
+   PHP-debuggausrutiineja omassa tiedostossaan.
+*/
+include('debuggeri.php');  
+debuggeri(basename($_SERVER['SCRIPT_NAME']).",post:".var_export($_POST,true));
 $error_required = array();
 $error_numeric = array();
 $kentat = array('title','description','release_year','language_id',
@@ -12,7 +13,7 @@ $numeeriset = array('release_year','rental_duration','rental_rate','length','rep
 foreach ($kentat AS $kentta) {
   if (empty($_POST[$kentta]) and $kentta <> 'special_features') 
 	$error_required[$kentta] = true;
-  if (in_array($kentta,$numeeriset) and !is_numeric($_POST[$kentta]))
+  if (in_array($kentta,$numeeriset) and !is_numeric(str_replace(",",".",$_POST[$kentta])))
 	$error_numeric[$kentta] = true;
   }				
 
@@ -20,20 +21,22 @@ foreach ($kentat AS $kentta) {
 if ($error_required or $error_numeric){
   echo "<form name=\"error_form\" action=\"tehtava_db_testi.php\" method=\"post\">";
   if ($error_required){
+    /* Lomakkeelta puuttuvat kentät palautetaan virheinä lomakkeelle. */    
     foreach ($error_required AS $error_field => $error_value)
     echo "<input type=\"hidden\" value=\"$error_field\" name=\"error_required[]\">";
-	}
+    }
   if ($error_numeric){
     foreach ($error_numeric AS $error_field => $error_value)
     echo "<input type=\"hidden\" value=\"$error_field\" name=\"error_numeric[]\">";
-	}
+    }
   foreach ($kentat AS $kentta){
-	$arvo = isset($_POST[$kentta]) ? $_POST[$kentta] : ""; 
-	if (is_array($arvo)) {
-	  $name = $kentta."[]";	
-	  foreach ($arvo AS $arvo_i){
-	    echo "<input type=\"hidden\" value=\"$arvo_i\" name=\"$name\">";
-	    }
+  /* Lomakkeen kenttien jo syötetyt arvot palautetaan valmiiksi lomakkeelle. */    
+    $arvo = isset($_POST[$kentta]) ? $_POST[$kentta] : ""; 
+    if (is_array($arvo)) {
+      $name = $kentta."[]";	
+      foreach ($arvo AS $arvo_i){
+        echo "<input type=\"hidden\" value=\"$arvo_i\" name=\"$name\">";
+	}
       }	
     elseif (!empty($arvo)) echo "<input type=\"hidden\" value=\"$arvo\" name=\"$kentta\">";
     }
@@ -62,14 +65,16 @@ while ($row = $result->fetch_assoc()){
 exit;  */
   
 $mysql_arvot = array();  
+$kentat = array_intersect($kentat,array_keys($_POST));
 foreach ($kentat AS $kentta){
   if (isset($_POST[$kentta]) and is_array($_POST[$kentta])) {
-	$mysql_arvot[$kentta] = implode(",",$_POST[$kentta]);  
+    $mysql_arvot[$kentta] = implode(",",$_POST[$kentta]);  
     }	
   elseif ($kentta <> 'special_features') {
     $arvo = trim(strip_tags($_POST[$kentta])); 	
-	//$encoding = mb_detect_encoding($arvo);
-	//echo "$arvo,encoding:$encoding<br>";
+    if (in_array($kentta,$numeeriset)) $arvo = str_replace(",",".",$arvo);
+    //$encoding = mb_detect_encoding($arvo);
+    //echo "$arvo,encoding:$encoding<br>";
     $mysql_arvot[$kentta] = $db->real_escape_string($arvo);
     //$mysql_arvot[$kentta] = $arvo;
     }
@@ -79,7 +84,16 @@ $arvot = implode("','",$mysql_arvot);
 $db->set_charset('utf8');
 $query = "INSERT INTO film ($kentat) VALUES ('$arvot')";
 //echo $query."<br>";
-$db->query($query);
-echo "<p>Elokuvan tiedot on tallennettu.</p><br>";
+$result = $db->query($query);
+if (!$result) {
+  debuggeri_backtrace("$query\nvirhe:".$db->error);
+  debuggeri("kentat:$kentat");
+  debuggeri("arvot:'$arvot'");
+  echo "<p>Elokuvan tallennus ei onnistunut.</p><br>";
+  }
+else {
+  debuggeri(basename(__FILE__).",$query");
+  echo "<p>Elokuvan tiedot on tallennettu.</p><br>";
+  }
 echo "<form action=\"tehtava_db_testi.php\"><input type=\"submit\" value=\"OK\"></form>"  
 ?>
