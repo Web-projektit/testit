@@ -1,5 +1,5 @@
 <?php
-/* Kommentti NetBeans 3.12.2019 klo 13:45*/
+/* Kommentti 3.12.2019 klo 13:41 */
   session_start();
   //$a = "1,1";
   //echo "a: ".($a + 0)."<br>";
