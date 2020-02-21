@@ -1,9 +1,9 @@
 <?php
-//echo "HERE";
-/* Harjoitus 9.1.2020 */
+/* Harjoitus 9.1.2020, viimeistelty 21.2.2020. */
 /* Responsiivinen navigointi hampurilaispainikkeella ja 
-   responsiivinen lomake, jossa on sekä client- että server-validointi bootstrap 4 perustuen. 
-   PHP-debuggausrutiineja omassa tiedostossaan. Nyt myös malliksi AJAX-
+   responsiivinen lomake, jossa on sekä client-validointi bootstrap 4 perustuen että server-validointi. 
+ * Bootstrapilla voi mm. kaunistella lomakkeen validointia.
+   PHP-debuggausrutiineja on omassa tiedostossaan. Nyt myös malliksi AJAX-
  * tekniikkaan perustuvaa validointia.
 */
 if (!session_id()) session_start();
@@ -98,6 +98,12 @@ function toggleError(nimi){
   $("[name='"+nimi+"']").addClass('is-invalid');
   }    
   
+function piilotaVirheet(){
+  $('#palaute').text('');  
+  $('.virhe_p').remove();
+  $('.virhe_missing').removeClass('virhe_missing').addClass('tyhja');
+  $('.virhe_numeric').removeClass('virhe_numeric').addClass('tyhja');
+  }
 
  
  (function() {
@@ -108,6 +114,8 @@ function toggleError(nimi){
     // Loop over them and prevent submission
     var validation = Array.prototype.filter.call(forms, function(form) {
       form.addEventListener('submit', function(event) {
+        /* Perinteiset virheilmoitukset palvelimelta poistetaan */  
+        piilotaVirheet();  
         if (form.checkValidity() === false) {
           event.preventDefault();
           event.stopPropagation();
@@ -116,10 +124,18 @@ function toggleError(nimi){
           event.preventDefault();
           event.stopPropagation();
           //alert('here');
+          /* Lomakkeeseen lisätää validointi-kenttä Ajaxin merkiksi */
           var formdata = $(form).serialize()+"&validation=1";  
           $.post("tehtava_lomakekasittelija.php",formdata,function(data) {
             // data: array['title','rating'..] //
-            console.log("data:",data);
+            console.log("data:"+data);
+            /* Kenttäkohtaiset virheilmoitukset taulukkona palvelimelta.
+             * Tässä virheilmoitukset hoitaa bootstrap, se aktivoidaan
+             * automaattisesti tyhjentämällä pakollinen kenttä. Muun kuin pakollisen
+             * kentän virheilmoituksen aktivointi tulee tehdä muulla
+             * tavalla, esim. näyttämällä ja sitten piilottamalla 
+             * kyseisen kentän virheilmoitus.
+             */
             if (Array.isArray(data)){
               data.forEach(v => {
                 console.log("v:",v); 
@@ -127,9 +143,11 @@ function toggleError(nimi){
                }) 
               }
             else {
-              form.submit();  
+              //form.submit(); 
+              /* Palauteteksti palvelimelta */
+              $('#palaute').text(data);
               }
-            }, "json");
+            }, "");
             
           }  //else     
         form.classList.add('was-validated');
@@ -554,6 +572,7 @@ if (isset($_POST['error_numeric'])) echo "<li class=\"virhe_p\"><span class=\"vi
 <!--<a href="tehtava_sessio.php?ulos=k">Poista sessioparametrit</a>-->
 <!--<iframe name="tulokset" frameborder=0 width="600" height="600"></frame>-->
 </ul>
+<div><p id="palaute"></p></div>    
 </div>
 <div id="footer">
     <p>Tämä on footer sivun lopussa.</p>    
