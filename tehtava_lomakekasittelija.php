@@ -6,7 +6,50 @@
    lomakkeen kenttien syötetyt arvot palautetaan perinteiseen tapaan 
    lomakkeella selaimelle, joka lähettää sen javascript-komennolla edelleen lomakesivulle.
 */
-include('debuggeri.php');  
+include('debuggeri.php');
+require 'Exception.php';
+require 'PHPMailer.php';
+require 'SMTP.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+$to = "jukka.aula@omnia.fi";
+
+function posti($emailTo,$msg,$subject){
+include('../../tunnukset.php');   
+$emailFrom = "omniakurssi@email.com";
+$emailFromName = "Ohjelmointikurssi";
+$emailToName = "";
+$mail = new PHPMailer;
+$mail->isSMTP(); 
+$mail->CharSet = 'UTF-8';
+$mail->SMTPDebug = 0; // 0 = off (for production use) - 1 = client messages - 2 = client and server messages
+$mail->Host = "smtp.gmail.com"; // use $mail->Host = gethostbyname('smtp.gmail.com'); // if your network does not support SMTP over IPv6
+$mail->Port = 587; // TLS only
+$mail->SMTPSecure = 'tls'; // ssl is depracated
+$mail->SMTPAuth = true;
+$mail->Username = $smtpUsername;
+$mail->Password = $smtpPassword;
+$mail->setFrom($emailFrom, $emailFromName);
+$mail->addAddress($emailTo, $emailToName);
+$mail->Subject = $subject;
+$mail->msgHTML($msg); //$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,
+$mail->AltBody = 'HTML messaging not supported';
+// $mail->addAttachment('images/phpmailer_mini.png'); //Attach an image file
+if(!@$mail->send()){
+    $tulos = false;
+    debuggeri("Mailer Error: " . $mail->ErrorInfo);
+}else{
+    $tulos = true;
+    debuggeri("Message sent!");
+}
+return $tulos;
+}
+
+//$tulos = posti($to,"Testiä","Testausta lisää.");
+//echo "Tulos: $tulos";
+//exit;
 
 function palaute($ajax,$message){
 if ($ajax){
@@ -29,7 +72,7 @@ $numeeriset = array('release_year','rental_duration','rental_rate','length','rep
 foreach ($kentat AS $kentta) {
   if (empty($_POST[$kentta]) and $kentta <> 'special_features') 
 	$error_required[$kentta] = true;
-  if (in_array($kentta,$numeeriset) and !is_numeric(str_replace(",",".",$_POST[$kentta])))
+  if (in_array($kentta,$numeeriset) and (!is_numeric(str_replace(",",".",$_POST[$kentta])) or $_POST[$kentta] < 0)) 
 	$error_numeric[$kentta] = true;
   }	
   
@@ -118,6 +161,9 @@ if (!$result) {
   }
 else {
   debuggeri(basename(__FILE__).",$query");
+  $title = isset($_POST['title']) ? trim($_POST['title']) : "";
+  $msg = "Elokuva $title on lisätty tietokontaan.";
+  posti($to,$msg,"Elokuva lisätty tietokantaan.");
   palaute($ajax,"Elokuvan tiedot on tallennettu.");
   }
 if (!$ajax){
