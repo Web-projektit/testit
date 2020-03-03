@@ -136,12 +136,21 @@ function piilotaVirheet(){
              * tavalla, esim. näyttämällä ja sitten piilottamalla 
              * kyseisen kentän virheilmoitus.
              */
-            if (Array.isArray(data)){
+            data = JSON.parse(data);
+            //var tyyppi = typeof data;
+            //console.log("data parsed:"+data+",tyyppi:"+tyyppi);
+            if (data instanceof Object){
+              for(var key in data){
+                console.log(`${key}: ${data[key]}`);  
+                $("[name='"+key+"']").val('');
+                }
+              }    
+            /*else if (Array.isArray(data))
               data.forEach(v => {
                 console.log("v:",v); 
                 $("[name='"+v+"']").val('');
-               }) 
-              }
+                }) 
+              //}*/
             else {
               //form.submit(); 
               /* Palauteteksti palvelimelta */
@@ -518,7 +527,7 @@ while ($row = $result->fetch_assoc()){
 <div class="form-group row">
 <label class="control-label col-sm-2">Vuokra-aika:</label><span class="<?php virhe('rental_duration');?>">*</span>
 <div class="col-sm-10">
-<input required class="form-control lukema" type="number" min="1" max="365" name="rental_duration" placeholder="1" value="<?php nayta('rental_duration');?>"><span class="yksikko">pv</span><br>
+<input required class="form-control lukema" type="number" max="365" name="rental_duration" placeholder="1" value="<?php nayta('rental_duration');?>"><span class="yksikko">pv</span><br>
 <div class="invalid-feedback">Lisää vuokra-aika.</div>  
 <?php server_validation('rental_duration');?>
 </div></div>
